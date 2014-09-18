@@ -1723,16 +1723,20 @@ var cleanInterface = false;
         window.shimIndexedDB = idbModules.shimIndexedDB;
         if (window.shimIndexedDB) {
             window.shimIndexedDB.__useShim = function(){
-                window.indexedDB = idbModules.shimIndexedDB;
                 window.IDBDatabase = idbModules.IDBDatabase;
                 window.IDBTransaction = idbModules.IDBTransaction;
                 window.IDBCursor = idbModules.IDBCursor;
                 window.IDBKeyRange = idbModules.IDBKeyRange;
-                // On some browsers the assignment fails, overwrite with the defineProperty method
-                if (window.indexedDB !== idbModules.shimIndexedDB && Object.defineProperty) {
-                    Object.defineProperty(window, 'indexedDB', {
-                        value: idbModules.shimIndexedDB
-                    });
+                try {
+                  window.indexedDB = idbModules.shimIndexedDB;
+                  // On some browsers the assignment fails, overwrite with the defineProperty method
+                  if (window.indexedDB !== idbModules.shimIndexedDB && Object.defineProperty) {
+                      Object.defineProperty(window, 'indexedDB', {
+                          value: idbModules.shimIndexedDB
+                      });
+                  }
+                } catch(e) {
+                  window.mozIndexedDB = idbModules.shimIndexedDB;
                 }
             };
             window.shimIndexedDB.__debug = function(val){
@@ -1744,6 +1748,7 @@ var cleanInterface = false;
     /*
     prevent error in Firefox
     */
+
     if(!('indexedDB' in window)) {
         window.indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.oIndexedDB || window.msIndexedDB;
     }
@@ -1759,7 +1764,7 @@ var cleanInterface = false;
         }
     }
 
-    if ((typeof window.indexedDB === "undefined" || poorIndexedDbSupport) && typeof window.openDatabase !== "undefined") {
+    if ((typeof window.indexedDB === "undefined" || poorIndexedDbSupport) && typeof window.openDatabase !== "undefined" || window.indexedDB === null) {
         window.shimIndexedDB.__useShim();
     }
     else {
