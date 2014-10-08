@@ -18,7 +18,7 @@
                       });
                   }
                 } catch(e) {
-                  window.mozIndexedDB = idbModules.shimIndexedDB;
+                  window._indexedDB = idbModules.shimIndexedDB;
                 }
             };
             window.shimIndexedDB.__debug = function(val){
@@ -44,6 +44,14 @@
         if (!navigator.userAgent.match(/Chrome/)) {
             poorIndexedDbSupport = true;
         }
+    } else if(navigator.userAgent.match(/Version\/7\.1[\.0-9]* Safari\//) || navigator.userAgent.match(/\(iPad; CPU OS 8_/) ||
+      navigator.userAgent.match(/\(iPhone; CPU OS 8_/)) {
+      /* Safari for Mac version 7.1 (9537.85.10.17.1) and Mobile Safari version for iOS 8, 8.0.1, and 8.0.2 all have
+          a known bug for removing items from indexeddb objectStores that have the same id as items in other objectStores.
+          This makes these version unusable.  See: http://www.raymondcamden.com/2014/9/25/IndexedDB-on-iOS-8--Broken-Bad
+          Once a working version is released this userAgent match should be updated to only match these affect versions.
+       */
+       poorIndexedDbSupport = true;
     }
 
     if ((typeof window.indexedDB === "undefined" || poorIndexedDbSupport) && typeof window.openDatabase !== "undefined" || window.indexedDB === null) {
