@@ -44,9 +44,15 @@
         if (!navigator.userAgent.match(/Chrome/)) {
             poorIndexedDbSupport = true;
         }
-    } else if(navigator.userAgent.match(/Version\/7\.1[\.0-9]* Safari\//) || navigator.userAgent.match(/\(iPad; CPU OS 8_/) ||
+    } else if((navigator.userAgent.match(/Safari/) && !navigator.userAgent.match(/Chrome/)) ||
+      navigator.userAgent.match(/Version\/8\.0[\.0-9]* Safari\//) ||
+      navigator.userAgent.match(/Version\/7\.1[\.0-9]* Safari\//) ||
+      navigator.userAgent.match(/\(iPad; CPU OS 8_/) ||
       navigator.userAgent.match(/\(iPhone; CPU OS 8_/)) {
-      /* Safari for Mac version 7.1 (9537.85.10.17.1) and Mobile Safari version for iOS 8, 8.0.1, and 8.0.2 all have
+      /*
+      Right now I am matching all version of Safari because there are 3 know bugs and no time line in place when any will be resolved
+
+      Safari for Mac version 7.1 (9537.85.10.17.1), 8.0 and Mobile Safari version for iOS 8, 8.0.1, and 8.0.2 all have
           a known bug for removing items from indexeddb objectStores that have the same id as items in other objectStores.
           This makes these version unusable.  See: http://www.raymondcamden.com/2014/9/25/IndexedDB-on-iOS-8--Broken-Bad
           Once a working version is released this userAgent match should be updated to only match these affect versions.
